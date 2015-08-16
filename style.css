@@ -1,0 +1,58 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    background-color: #002b36;
+    color: #fff;
+
+    font-size: 12pt;
+    font-family: monospace, sans-serif, arial;
+    width: 700px;
+}
+
+.CodeMirror {
+    font-size: 12pt;
+    font-family: consolas;
+    height: 400px;
+}
+
+.cm-tab {
+    color: #aaa;
+}
+
+.cm-trailingspace {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==);
+    background-position: bottom left;
+    background-repeat: repeat-x;
+}
+
+p {
+    padding: 5px;
+}
+
+.mode {
+    float: right;
+}
+
+.theme {
+    float: left;
+}
+
+ul#open-files {
+    float: left;
+    width: 200px;
+}
+
+ul#open-files li:hover {
+    cursor: pointer;
+}
+
+select {
+    width: 200px;
+}
+
+.border {
+    border: 1px solid #f7f7f7;
+}
