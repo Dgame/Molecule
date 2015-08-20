@@ -47,6 +47,7 @@
 
     <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
     <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="editor.js"></script>
 
     <script src="codemirror/addon/display/placeholder.js"></script>
     <script src="codemirror/addon/display/rulers.js"></script>
@@ -158,156 +159,25 @@
     <script src="codemirror/mode/z80/z80.js"></script>
 </head>
 <body>
-    <script type="text/javascript">
-        window.$ = window.jQuery = require(__dirname + '/js/jquery-2.1.4.min.js');
-
-        $(document).ready(function() {
-            var remote = require('remote');
-            var dialog = remote.require('dialog');
-            var fs = require('fs');
-
-            var CodeEditor = CodeMirror.fromTextArea(
-                document.getElementById('editor'),
-                {
-                    placeholder: 'Code goes here...',
-                    viewportMargin: Infinity,
-                    rulers: [
-                        {
-                            color: '#ccc',
-                            column: 120,
-                            lineStyle: 'dashed'
-                        }
-                    ],
-                    showTrailingSpace: true,
-                    lineNumbers: true,
-                    styleActiveLine: true,
-                    autoCloseBrackets: true,
-                    matchBrackets: true,
-                    lineWrapping: true,
-                    indentUnit: 4,
-                    smartIndent: true,
-                    tabSize: 4,
-                    indentWithTabs: false,
-                    autofocus: true,
-                    extraKeys: {
-                        'Ctrl-Space': 'autocomplete',
-                        'Ctrl-F': 'findPersistent',
-                        'Ctrl-P': function(cm) {
-                            return cm.openDialog(
-                                $('#dialog').html(),
-                                function(cmd) {
-                                    var cmds = cmd.split(' ');
-                                    if (cmds.length < 1)
-                                        return false;
-
-                                    var cmd = cmds.shift();
-                                    switch (cmd) {
-                                        case 'open':
-                                            return openFile(cmds);
-                                        case 'save':
-                                            saveFile();
-                                    }
-                                }
-                            );
-                        },
-                        'Ctrl-S': saveFile
-                    },
-                    globalVars: true
-                }
-            );
-
-        function basename(path) {
-            return path.split('/').reverse()[0];
-        }
-
-        function open(fileName) {
-            fs.readFile(fileName, 'utf-8', function(err, data) {
-                $('#fileName').val(fileName);
-                CodeEditor.setValue(data);
-
-                var name = basename(fileName);
-                var add = true;
-
-                $('#open-files li').each(function() {
-                    if ($(this).text() == name) {
-                        add = false;
-                        return true;
-                    }
-                });
-
-                if (add)
-                    $('#open-files').append($('<li>').text(name));
-            });
-        }
-
-        function openFile(file) {
-            if (file !== undefined && file.length > 0) {
-                var fileName = $.trim(file);
-                return open(__dirname + '/' + file);
-            }
-
-            dialog.showOpenDialog(function(fileNames) {
-                if (fileNames === undefined)
-                    return;
-
-                var fileName = fileNames[0];
-                return open(fileName);
-            });
-        }
-
-        function save(fileName) {
-            fs.writeFile(fileName, CodeEditor.getValue(), function (err) {
-                if (err)
-                    alert(err);
-            });
-        }
-
-        function saveFile() {
-            var fileName = $('#fileName').val();
-            if (fileName.length != 0) {
-                return save(fileName);
-            }
-
-            dialog.showSaveDialog(function(fileName) {
-                if (fileName === undefined)
-                    return;
-
-                return save(fileName);
-            });
-        }
-
-        $('#open-files').on('click', 'li', function() {
-            var name = $(this).text();
-            open(__dirname + '/' + name);
-        });
-
-        $('#theme').change(function() {
-            var theme = $(this).find('option:selected').val();
-            CodeEditor.setOption('theme', theme);
-        });
-
-        $('#mode').change(function() {
-            var mode = $(this).find('option:selected').val();
-            CodeEditor.setOption('mode', mode);
-        });
-    });
-    </script>
     <div id="dialog" style="display: none">
-        <input type="text" value="" name="cmd" id="cmd" />
+        <input type="text" value="" name="cmd" id="cmd" placeholder="Command?" />
     </div>
 
     <p>
         <input type="hidden" name="fileName" id="fileName" value="" />
     </p>
 
+    <div id="open-files">
+        <h4>Files:</h4>
+        <ul></ul>
+    </div>
+
     <p>
-        <ul id="open-files"></ul>
         <textarea id="editor" name="editor"></textarea>
     </p>
 
-    <div class="theme">
-        <p>Select a language:</p>
-        <select id="mode" class="mode">
+    <div id="select">
+        <select id="mode">
             <option>apl</option>,
             <option>asciiarmor</option>,
             <option>asn.1</option>,
@@ -410,11 +280,8 @@
             <option>yaml</option>,
             <option>z80</option>
         </select>
-    </div>
 
-    <div class="mode">
-        <p>Select a theme:</p>
-        <select id="theme" class="theme">
+        <select id="theme">
             <option>default</option>,
             <option>3024-day</option>,
             <option>3024-night</option>,
