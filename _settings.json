@@ -1,0 +1,11 @@
+{
+    "open_files": [
+        "package.json",
+        "index.html",
+        "style.css",
+        "main.js",
+        "settings.json"
+    ],
+    "theme": "elegant",
+    "mode": "javascript"
+}

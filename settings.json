@@ -1,11 +1,15 @@
 {
-    "open_files": [
-        "package.json",
-        "index.html",
-        "style.css",
-        "main.js",
-        "settings.json"
-    ],
-    "theme": "elegant",
-    "mode": "javascript"
+    "ShowTrailingSpace": true,
+    "ShowLineNumbers": true,
+    "StyleActiveLine": true,
+    "AutoCloseBrackets": true,
+    "MatchBrackets": true,
+    "LineWrapping": true,
+    "IndentUnit": 4,
+    "SmartIndent": true,
+    "TabSize": 4,
+    "IndentWithTabs": false,
+    "AutoFocus": true,
+    "LineLength": 120,
+    "RulerColor": "#ccc"
 }

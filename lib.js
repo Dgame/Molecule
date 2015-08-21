@@ -2,6 +2,9 @@ var remote = require('remote');
 var dialog = remote.require('dialog');
 var fs = require('fs');
 
+var s = require(__dirname + '/Settings.js');
+var Settings = new s.Settings('settings.json');
+
 window.$ = window.jQuery = require(__dirname + '/js/jquery-2.1.4.min.js');
 
 $(document).ready(function() {
@@ -10,21 +13,21 @@ $(document).ready(function() {
             placeholder: 'Code goes here...',
             viewportMargin: Infinity,
             rulers: [{
-                color: '#ccc',
-                column: 120,
+                color: Settings.Values.RulerColor,
+                column: Settings.Values.LineLength,
                 lineStyle: 'dashed'
             }],
-            showTrailingSpace: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            autoCloseBrackets: true,
-            matchBrackets: true,
-            lineWrapping: true,
-            indentUnit: 4,
-            smartIndent: true,
-            tabSize: 4,
-            indentWithTabs: false,
-            autofocus: true,
+            showTrailingSpace: Settings.Values.ShowTrailingSpace,
+            lineNumbers: Settings.Values.ShowLineNumbers,
+            styleActiveLine: Settings.Values.StyleActiveLine,
+            autoCloseBrackets: Settings.Values.AutoCloseBrackets,
+            matchBrackets: Settings.Values.MatchBrackets,
+            lineWrapping: Settings.Values.LineWrapping,
+            indentUnit: Settings.Values.IndentUnit,
+            smartIndent: Settings.Values.SmartIndent,
+            tabSize: Settings.Values.TabSize,
+            indentWithTabs: Settings.Values.IndentWithTabs,
+            autofocus: Settings.Values.AutoFocus,
             extraKeys: {
                 'Ctrl-Space': 'autocomplete',
                 'Ctrl-F': 'findPersistent',
@@ -57,14 +60,15 @@ $(document).ready(function() {
     }
 
     (function init() {
-        fs.readFile(__dirname + '/settings.json', 'utf-8', function(err, data) {
+        fs.readFile(Settings.File, 'utf-8', function(err, data) {
             if (!err) {
                 var obj = JSON.parse(data);
                 $.each(obj.open_files, function(idx, name) {
                     addFile(name);
                 });
 
-                open(__dirname + '/' + obj.open_files.pop());
+                var fileName = obj.open_files.pop();
+                openFile(fileName);
 
                 $('#theme option').each(function() {
                     if ($(this).text() == obj.theme) {
@@ -80,8 +84,8 @@ $(document).ready(function() {
                     }
                 });
 
-                setOption('mode', obj.mode);
-                setOption('theme', obj.theme);
+                CodeEditor.setOption('mode', obj.mode);
+                CodeEditor.setOption('theme', obj.theme);
             }
         });
     })();
@@ -99,7 +103,7 @@ $(document).ready(function() {
         return open;
     }
 
-    function isLoaded(fileName) {
+    function isCurrent(fileName) {
         return fileName == $('#fileName').val();
     }
 
@@ -109,25 +113,29 @@ $(document).ready(function() {
     }
 
     function addFile(name) {
-        $('#open-files ul').append($('<li>').text(name));
+        var entry = $('<li>').text(name);
+        $('#open-files ul').append(entry);
     }
 
-    function open(fileName) {
-        if (isLoaded(fileName))
+    function openFile(file) {
+        var fileName = __dirname + '/' + file;
+        if (isCurrent(fileName))
             return false;
 
-        fs.readFile(fileName, 'utf-8', function(err, data) {
-            edit(fileName, data);
+        var data = fs.readFileSync(fileName, 'utf-8');
+        edit(fileName, data);
 
-            var name = fileName.split('/').reverse()[0];
-            if (!isOpen(name))
-                addFile(name);
-        });
+        if (!isOpen(file))
+            addFile(file);
     }
 
-    function openFile(files) {
+    function openFiles(files) {
         if (files !== undefined && files.length !== 0) {
-            return openFiles(files);
+            $.each(files, function(idx, fileName) {
+                openFile(fileName);
+            });
+
+            return true;
         }
 
         dialog.showOpenDialog({
@@ -146,57 +154,40 @@ $(document).ready(function() {
         );
     }
 
-    function openFiles(fileNames) {
-        $.each(fileNames, function(idx, fileName) {
-            open(__dirname + '/' + $.trim(fileName));
-        });
-
-        return true;
-    }
-
-    function save(fileName) {
-        fs.writeFile(fileName, CodeEditor.getValue(), function(err) {
-            if (err)
-                alert(err);
-        });
-    }
-
-    function saveFile(file) {
+    function saveFile(files) {
         var fileName = $('#fileName').val();
-
-        if (fileName.length === 0 && file !== undefined && file.length !== 0) {
-            fileName = file.shift();
+        if (fileName.length === 0 && files !== undefined && files.length !== 0) {
+            fileName = files.shift();
         }
 
         if (fileName.length !== 0) {
-            return save(fileName);
+            fs.writeFileSync(fileName, CodeEditor.getValue(), 'utf-8');
+            return true;
         }
 
         dialog.showSaveDialog(function(fileName) {
             if (fileName === undefined)
-                return;
+                return false;
 
-            return save(fileName);
+            fs.writeFileSync(fileName, CodeEditor.getValue(), 'utf-8');
+
+            return true;
         });
     }
 
     $('#open-files ul').on('click', 'li', function() {
-        var name = $(this).text();
-        open(__dirname + '/' + name);
+        var fileName = $(this).text();
+        openFile(fileName);
     });
-
-    function setOption(what, val) {
-        CodeEditor.setOption(what, val);
-    }
 
     $('#theme').change(function() {
         var theme = $(this).find('option:selected').val();
-        setOption('theme', theme);
+        CodeEditor.setOption('theme', theme);
     });
 
     $('#mode').change(function() {
         var mode = $(this).find('option:selected').val();
-        setOption('mode', mode);
+        CodeEditor.setOption('mode', mode);
     });
 });
 
@@ -213,9 +204,5 @@ $(window).unload(function() {
     };
 
     var json = JSON.stringify(settings, null, 4);
-
-    fs.writeFile(__dirname + '/settings.json', json, function(err) {
-        if (err)
-            alert(err);
-    });
+    fs.writeFileSync(Settings.File, json, 'utf-8');
 });
