@@ -60,34 +60,31 @@ $(document).ready(function() {
     }
 
     (function init() {
-        fs.readFile(Settings.File, 'utf-8', function(err, data) {
-            if (!err) {
-                var obj = JSON.parse(data);
-                $.each(obj.open_files, function(idx, name) {
-                    addFile(name);
-                });
+        var data = fs.readFileSync(Settings.File, 'utf-8');
+        var obj = JSON.parse(data);
+        $.each(obj.open_files, function(idx, name) {
+            addFile(name);
+        });
 
-                var fileName = obj.open_files.pop();
-                openFile(fileName);
+        var fileName = obj.open_files.pop();
+        openFile(fileName);
 
-                $('#theme option').each(function() {
-                    if ($(this).text() == obj.theme) {
-                        $(this).prop('selected', true);
-                        return false;
-                    }
-                });
-
-                $('#mode option').each(function() {
-                    if ($(this).text() == obj.mode) {
-                        $(this).prop('selected', true);
-                        return false;
-                    }
-                });
-
-                CodeEditor.setOption('mode', obj.mode);
-                CodeEditor.setOption('theme', obj.theme);
+        $('#theme option').each(function() {
+            if ($(this).text() == obj.theme) {
+                $(this).prop('selected', true);
+                return false;
             }
         });
+
+        $('#mode option').each(function() {
+            if ($(this).text() == obj.mode) {
+                $(this).prop('selected', true);
+                return false;
+            }
+        });
+
+        CodeEditor.setOption('mode', obj.mode);
+        CodeEditor.setOption('theme', obj.theme);
     })();
 
     function isOpen(fileName) {
@@ -109,11 +106,13 @@ $(document).ready(function() {
 
     function edit(fileName, data) {
         $('#fileName').val(fileName);
+        $('#content h6').text(fileName);
         CodeEditor.setValue(data);
     }
 
     function addFile(name) {
-        var entry = $('<li>').text(name);
+        var entry = document.createElement('li');
+        $(entry).text(name);
         $('#open-files ul').append(entry);
     }
 
