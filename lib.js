@@ -5,9 +5,13 @@ var fs = require('fs');
 var s = require(__dirname + '/Settings.js');
 var Settings = new s.Settings('settings.json');
 
-window.$ = window.jQuery = require(__dirname + '/js/jquery-2.1.4.min.js');
+window.$ = window.jQuery = require(__dirname + '/jquery/jquery-2.1.4.min.js');
+
+require(__dirname + '/jquery-treeview/jquery.treeview.js');
 
 $(document).ready(function() {
+    var t0 = performance.now();
+
     var CodeEditor = CodeMirror.fromTextArea(
         document.getElementById('editor'), {
             placeholder: 'Code goes here...',
@@ -45,6 +49,9 @@ $(document).ready(function() {
         }
     );
 
+    var t1 = performance.now();
+    console.log('Call to init CodeEditor took ' + (t1 - t0) + ' milliseconds.');
+
     function handleCommand(commands) {
         var cmds = commands.split(' ');
         if (cmds.length < 1)
@@ -59,25 +66,62 @@ $(document).ready(function() {
         }
     }
 
+    function listTreeViewOf(dir) {
+        var entries = fs.readdirSync(dir);
+
+        var img = {
+            folder: '<img src="jquery-treeview/images/folder.gif" />',
+            file: '<img src="jquery-treeview/images/file.gif" />'
+        };
+
+        var results = [];
+        $.each(entries, function(idx, file) {
+            var path = dir + '/' + file;
+            var stat = fs.statSync(path);
+
+            if (stat && stat.isDirectory()) {
+                var files = listTreeViewOf(path);
+
+                if (files.length !== 0) {
+                    results.push('<li>' + img.folder + ' ' + file + '<ul style="display: none;">');
+                    results.push(files.join("\n"));
+                    results.push('</ul></li>');
+                } else {
+                    results.push('<li>' + img.folder + ' ' + file + '</li>');
+                }
+            } else {
+                var span = '<span style="display: none;">' + path + '</span>';
+                results.push('<li>' + span + img.file + ' ' + file + '</li>');
+            }
+        });
+
+        return results;
+    }
+
     (function init() {
         var data = fs.readFileSync(Settings.File, 'utf-8');
         var obj = JSON.parse(data);
-        $.each(obj.open_files, function(idx, name) {
-            addFile(name);
-        });
 
-        var fileName = obj.open_files.pop();
-        openFile(fileName);
+        // $.each(obj.open_files, function(idx, name) {
+        //     addFile(name);
+        // });
 
-        $('#theme option').each(function() {
-            if ($(this).text() == obj.theme) {
+        var files = listTreeViewOf(__dirname);
+        // $('#open-files').append('<li>Foo</li>');
+        $('#open-files').html(files.join("\n")).treeview();
+
+        // var fileName = obj.open_files.pop();
+        // openFile(fileName);
+
+        $('#mode').each(function() {
+            if ($(this).text() == obj.mode) {
                 $(this).prop('selected', true);
                 return false;
             }
         });
 
-        $('#mode option').each(function() {
-            if ($(this).text() == obj.mode) {
+        $('#theme').each(function() {
+            if ($(this).text() == obj.theme) {
                 $(this).prop('selected', true);
                 return false;
             }
@@ -87,45 +131,50 @@ $(document).ready(function() {
         CodeEditor.setOption('theme', obj.theme);
     })();
 
-    function isOpen(fileName) {
-        var open = false;
-
-        $('#open-files li').each(function() {
-            if ($(this).text() == fileName) {
-                open = true;
-                return false;
-            }
-        });
-
-        return open;
-    }
+    $('#open-files').on('click', 'li', function() {
+        var path = $(this).find('span').text();
+        if (path !== undefined && path.length !== 0) {
+            openFile(path);
+        }
+    });
 
     function isCurrent(fileName) {
         return fileName == $('#fileName').val();
     }
 
     function edit(fileName, data) {
+        if (fileName.length === 0)
+            return false;
+
         $('#fileName').val(fileName);
-        $('#content h6').text(fileName);
+
+        var name = fileName.split('/').pop();
+        $('#title').text(name);
+
         CodeEditor.setValue(data);
     }
 
-    function addFile(name) {
-        var entry = document.createElement('li');
-        $(entry).text(name);
-        $('#open-files ul').append(entry);
-    }
+    // function addFile(name) {
+    //     if (fileName.length === 0)
+    //         return false;
+    //
+    //     var entry = document.createElement('li');
+    //     $(entry).text(name);
+    //     $('#open-files').append(entry);
+    // }
 
-    function openFile(file) {
-        var fileName = __dirname + '/' + file;
+    function openFile(fileName) {
+        if (fileName.length === 0)
+            return false;
+
         if (isCurrent(fileName))
             return false;
 
         var data = fs.readFileSync(fileName, 'utf-8');
         edit(fileName, data);
-
-        if (!isOpen(file))
-            addFile(file);
+        //
+        // if (!isOpen(file))
+        //     addFile(file);
     }
 
     function openFiles(files) {
@@ -146,9 +195,11 @@ $(document).ready(function() {
             },
             function(fileNames) {
                 if (fileNames === undefined)
-                    return;
+                    return false;
 
-                return openFiles(fileNames);
+                openFiles(fileNames);
+
+                return false;
             }
         );
     }
@@ -161,38 +212,41 @@ $(document).ready(function() {
 
         if (fileName.length !== 0) {
             fs.writeFileSync(fileName, CodeEditor.getValue(), 'utf-8');
-            return true;
-        }
+        } else {
+            dialog.showSaveDialog(function(fileName) {
+                if (fileName === undefined)
+                    return false;
 
-        dialog.showSaveDialog(function(fileName) {
-            if (fileName === undefined)
+                fs.writeFileSync(fileName, CodeEditor.getValue(), 'utf-8');
+
                 return false;
-
-            fs.writeFileSync(fileName, CodeEditor.getValue(), 'utf-8');
-
-            return true;
-        });
+            });
+        }
     }
-
-    $('#open-files ul').on('click', 'li', function() {
-        var fileName = $(this).text();
-        openFile(fileName);
-    });
 
     $('#theme').change(function() {
         var theme = $(this).find('option:selected').val();
         CodeEditor.setOption('theme', theme);
+
+        return false;
     });
 
     $('#mode').change(function() {
         var mode = $(this).find('option:selected').val();
         CodeEditor.setOption('mode', mode);
+
+        return false;
     });
+
+    var t2 = performance.now();
+    console.log('Call to load everything left took ' + (t2 - t1) + ' milliseconds.')
 });
 
 $(window).unload(function() {
+    var t0 = performance.now();
+
     var open_files = [];
-    $('#open-files ul li').each(function() {
+    $('#open-files').each(function() {
         open_files.push($(this).text());
     });
 
@@ -204,4 +258,7 @@ $(window).unload(function() {
 
     var json = JSON.stringify(settings, null, 4);
     fs.writeFileSync(Settings.File, json, 'utf-8');
+
+    var t1 = performance.now();
+    console.log('Call to unload took ' + (t1 - t0) + ' milliseconds.')
 });

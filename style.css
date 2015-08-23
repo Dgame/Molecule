@@ -145,30 +145,12 @@ p {
     border: 1px solid #eee;
 }
 
-#open-files {
+#file-sidebar {
     float: left;
-    width: 180px;
+    width: 200px;
     padding-left: 25px;
-}
-
-#open-files h4 {
-    font-weight: normal;
-    border-bottom: 1px solid #eee;
-}
-
-#open-files > ul {
-    list-style-type: none;
     overflow: auto;
 }
-
-#open-files > ul li {
-    line-height: 25px;
-}
-
-#open-files > ul li:before {
-    content: ' - ';
-}
-
-#open-files > ul li:hover {
+#open-files li:hover {
     cursor: pointer;
 }

@@ -2,7 +2,7 @@ var app = require('app'); // Module to control application life.
 var BrowserWindow = require('browser-window'); // Module to create native browser window.
 
 // Report crashes to our server.
-// require('crash-reporter').start();
+require('crash-reporter').start();
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is GCed.
@@ -27,7 +27,7 @@ app.on('ready', function() {
         'title': 'CodeEdit',
         'type': 'desktop',
         'auto-hide-menu-bar': true,
-        'use-content-size': true
+        'use-content-size': true,
     });
 
     // and load the index.html of the app.
@@ -35,7 +35,7 @@ app.on('ready', function() {
     mainWindow.focus();
 
     // Open the devtools.
-    // mainWindow.openDevTools();
+    mainWindow.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {
