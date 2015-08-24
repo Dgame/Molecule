@@ -163,18 +163,15 @@ $(document).ready(function() {
                 newOpen.addClass('active');
 
             var newFile = newOpen.find('.hidden').text();
-            if (newFile) {
+            if (newFile)
                 edit(newFile);
-            }
         }
 
         if (index !== -1) {
-            window.OpenFiles.splice(index, 1);
             parent.remove();
-
-            if (window.OpenFiles.length === 0) {
+            window.OpenFiles.splice(index, 1);
+            if (window.OpenFiles.length === 0)
                 window.CodeEditor.setValue('');
-            }
         }
     }
 
