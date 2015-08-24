@@ -6,8 +6,9 @@ var s = require(__dirname + '/Settings.js');
 var Settings = new s.Settings('settings.json');
 
 window.$ = window.jQuery = require(__dirname + '/jquery/jquery-2.1.4.min.js');
+window.OpenFiles = [];
 
-require(__dirname + '/jquery-treeview/jquery.treeview.js');
+require(__dirname + '/jquery/treeview/jquery.treeview.js');
 
 $(document).ready(function() {
     var t0 = performance.now();
@@ -66,52 +67,59 @@ $(document).ready(function() {
         }
     }
 
-    function listTreeViewOf(dir) {
+    function listTreeViewOf(dir, tree) {
         var entries = fs.readdirSync(dir);
 
-        var img = {
-            folder: '<img src="jquery-treeview/images/folder.gif" />',
-            file: '<img src="jquery-treeview/images/file.gif" />'
-        };
+        for (var i = 0; i < entries.length; i++) {
+            var file = entries[i];
 
-        var results = [];
-        $.each(entries, function(idx, file) {
             var path = dir + '/' + file;
             var stat = fs.statSync(path);
 
+            var path_span = $('<span/>').addClass('hidden').text(path);
+            var span = $('<span/>').text(file);
+
             if (stat && stat.isDirectory()) {
-                var files = listTreeViewOf(path);
+                var files = fs.readdirSync(path);
+
+                span.addClass('folder');
 
                 if (files.length !== 0) {
-                    results.push('<li>' + img.folder + ' ' + file + '<ul style="display: none;">');
-                    results.push(files.join("\n"));
-                    results.push('</ul></li>');
+                    var ul = $('<ul/>').hide();
+
+                    $('<li/>').append(span).append(path_span).append(ul).appendTo(tree);
+                    listTreeViewOf(path, ul);
                 } else {
-                    results.push('<li>' + img.folder + ' ' + file + '</li>');
+                    $('<li/>').append(span).append(path_span).appendTo(tree);
                 }
             } else {
-                var span = '<span style="display: none;">' + path + '</span>';
-                results.push('<li>' + span + img.file + ' ' + file + '</li>');
+                span.addClass('file');
+                $('<li/>').append(span).append(path_span).appendTo(tree);
             }
-        });
-
-        return results;
+        }
     }
 
     (function init() {
         var data = fs.readFileSync(Settings.File, 'utf-8');
         var obj = JSON.parse(data);
 
-        // $.each(obj.open_files, function(idx, name) {
-        //     addFile(name);
-        // });
+        if (obj.open_files.length !== 0) {
+            for (var i = 0; i < obj.open_files.length; i++) {
+                addToOpenFiles(obj.open_files[i]);
+            }
 
-        var files = listTreeViewOf(__dirname);
-        // $('#open-files').append('<li>Foo</li>');
-        $('#open-files').html(files.join("\n")).treeview();
+            var fileName = obj.open_files.pop();
+            edit(fileName);
+        }
 
-        // var fileName = obj.open_files.pop();
-        // openFile(fileName);
+        var ti0 = performance.now();
+
+        var tree = $('#treeview');
+        listTreeViewOf(__dirname, tree);
+        tree.treeview();
+
+        var ti1 = performance.now();
+        console.log('Call to load treeview took ' + (ti1 - ti0) + ' milliseconds.');
 
         $('#mode').each(function() {
             if ($(this).text() == obj.mode) {
@@ -131,57 +139,59 @@ $(document).ready(function() {
         CodeEditor.setOption('theme', obj.theme);
     })();
 
-    $('#open-files').on('click', 'li', function() {
-        var path = $(this).find('span').text();
-        if (path !== undefined && path.length !== 0) {
+    $('#treeview').on('click', 'li', function() {
+        var path = $(this).find('.hidden').text();
+        if (path.length !== 0) {
             openFile(path);
         }
     });
 
-    function isCurrent(fileName) {
-        return fileName == $('#fileName').val();
-    }
+    $('#open-files').on('click', 'li', function() {
+        $(this).siblings().removeClass('active');
+        $(this).addClass('active');
 
-    function edit(fileName, data) {
-        if (fileName.length === 0)
+        var fileName = $(this).find('span').text();
+        edit(fileName);
+    });
+
+    function addToOpenFiles(fileName) {
+        var index = window.OpenFiles.indexOf(fileName);
+        if (index !== -1) {
             return false;
+        }
 
-        $('#fileName').val(fileName);
+        window.OpenFiles.push(fileName);
 
         var name = fileName.split('/').pop();
-        $('#title').text(name);
 
+        var of = $('#open-files');
+        of.children().removeClass('active');
+
+        var span = $('<span>').text(fileName).addClass('hidden');
+        var li = $('<li/>').text(name).addClass('active').append(span);
+        of.append(li);
+    }
+
+    function edit(fileName) {
+        $('#fileName').val(fileName);
+
+        var data = fs.readFileSync(fileName, 'utf-8');
         CodeEditor.setValue(data);
     }
 
-    // function addFile(name) {
-    //     if (fileName.length === 0)
-    //         return false;
-    //
-    //     var entry = document.createElement('li');
-    //     $(entry).text(name);
-    //     $('#open-files').append(entry);
-    // }
-
     function openFile(fileName) {
-        if (fileName.length === 0)
+        if (fileName == $('#fileName').val())
             return false;
 
-        if (isCurrent(fileName))
-            return false;
-
-        var data = fs.readFileSync(fileName, 'utf-8');
-        edit(fileName, data);
-        //
-        // if (!isOpen(file))
-        //     addFile(file);
+        edit(fileName);
+        addToOpenFiles(fileName);
     }
 
     function openFiles(files) {
-        if (files !== undefined && files.length !== 0) {
-            $.each(files, function(idx, fileName) {
-                openFile(fileName);
-            });
+        if (files.length !== 0) {
+            for (var i = 0; i < files.length; i++) {
+                openFile(files[i]);
+            }
 
             return true;
         }
@@ -206,7 +216,7 @@ $(document).ready(function() {
 
     function saveFile(files) {
         var fileName = $('#fileName').val();
-        if (fileName.length === 0 && files !== undefined && files.length !== 0) {
+        if (fileName.length === 0 && files.length !== 0) {
             fileName = files.shift();
         }
 
@@ -239,19 +249,14 @@ $(document).ready(function() {
     });
 
     var t2 = performance.now();
-    console.log('Call to load everything left took ' + (t2 - t1) + ' milliseconds.')
+    console.log('Call to load everything left took ' + (t2 - t1) + ' milliseconds.');
 });
 
 $(window).unload(function() {
     var t0 = performance.now();
 
-    var open_files = [];
-    $('#open-files').each(function() {
-        open_files.push($(this).text());
-    });
-
     var settings = {
-        'open_files': open_files,
+        'open_files': window.OpenFiles,
         'theme': $('#theme').find('option:selected').val(),
         'mode': $('#mode').find('option:selected').val(),
     };
@@ -260,5 +265,5 @@ $(window).unload(function() {
     fs.writeFileSync(Settings.File, json, 'utf-8');
 
     var t1 = performance.now();
-    console.log('Call to unload took ' + (t1 - t0) + ' milliseconds.')
+    console.log('Call to unload took ' + (t1 - t0) + ' milliseconds.');
 });

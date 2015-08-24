@@ -151,6 +151,45 @@ p {
     padding-left: 25px;
     overflow: auto;
 }
+
+.hidden {
+    display: none;
+}
+
+#treeview li span {
+    padding-left: 25px;
+}
+
+#treeview li span.file {
+    background: url('jquery/treeview/images/file.gif') left no-repeat;
+}
+
+#treeview li span.folder {
+    background: url('jquery/treeview/images/folder.gif') left no-repeat;
+}
+
+#treeview li:hover {
+    cursor: pointer;
+}
+
+#open-files {
+    list-style-type: none;
+}
+
+#open-files li {
+    width: 180px;
+    text-align: center;
+    float: left;
+    margin-right: 5px;
+    border: 1px solid #000;
+    border-bottom: 0;
+    background-color: #eee;
+}
+
 #open-files li:hover {
     cursor: pointer;
+}
+
+#open-files li.active {
+    background-color: #fff;
 }
