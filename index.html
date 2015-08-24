@@ -1,56 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Code Edit</title>
-    <link type="text/css" rel="stylesheet" href="codemirror/lib/codemirror.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/addon/dialog/dialog.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/addon/search/matchesonscrollbar.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/3024-night.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/ambiance.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/base16-dark.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/base16-light.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/blackboard.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/cobalt.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/colorforth.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/dracula.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/eclipse.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/elegant.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/erlang-dark.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/icecoder.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/lesser-dark.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/liquibyte.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/material.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/mbo.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/mdn-like.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/midnight.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/monokai.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/neat.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/neo.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/night.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/paraiso-dark.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/paraiso-light.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/pastel-on-dark.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/rubyblue.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/seti.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/solarized.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/the-matrix.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/tomorrow-night-bright.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/tomorrow-night-eighties.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/ttcn.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/twilight.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/vibrant-ink.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/xq-dark.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/xq-light.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/yeti.css">
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/zenburn.css">
+    <title>Molecule</title>
 
-    <link type="text/css" rel="stylesheet" href="style.css">
+    <link type="text/css" rel="stylesheet" href="codemirror/lib/codemirror.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/addon/dialog/dialog.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/addon/search/matchesonscrollbar.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/3024-night.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/ambiance.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/base16-dark.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/base16-light.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/blackboard.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/cobalt.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/colorforth.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/dracula.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/eclipse.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/elegant.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/erlang-dark.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/icecoder.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/lesser-dark.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/liquibyte.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/material.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/mbo.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/mdn-like.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/midnight.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/monokai.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/neat.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/neo.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/night.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/paraiso-dark.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/paraiso-light.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/pastel-on-dark.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/rubyblue.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/seti.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/solarized.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/the-matrix.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/tomorrow-night-bright.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/tomorrow-night-eighties.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/ttcn.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/twilight.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/vibrant-ink.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/xq-dark.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/xq-light.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/yeti.css" />
+    <link type="text/css" rel="stylesheet" href="codemirror/theme/zenburn.css" />
 
-    <link type="text/css" rel="stylesheet" href="jquery/treeview/jquery.treeview.css">
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+
+    <link type="text/css" rel="stylesheet" href="jquery/treeview/jquery.treeview.css" />
 
     <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
     <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
-    <script type="text/javascript" src="lib.js"></script>
+    <script type="text/javascript" src="javascript/lib.js"></script>
 
     <script src="codemirror/addon/display/placeholder.js"></script>
     <script src="codemirror/addon/display/rulers.js"></script>

@@ -2,8 +2,8 @@ var remote = require('remote');
 var dialog = remote.require('dialog');
 var fs = require('fs');
 
-var s = require(__dirname + '/Settings.js');
-var Settings = new s.Settings('settings.json');
+var s = require(__dirname + '/javascript/Settings.js');
+var Settings = new s.Settings('json/settings.json');
 
 window.$ = window.jQuery = require(__dirname + '/jquery/jquery-2.1.4.min.js');
 window.OpenFiles = [];
@@ -13,7 +13,7 @@ require(__dirname + '/jquery/treeview/jquery.treeview.js');
 $(document).ready(function() {
     var t0 = performance.now();
 
-    var CodeEditor = CodeMirror.fromTextArea(
+    window.CodeEditor = CodeMirror.fromTextArea(
         document.getElementById('editor'), {
             placeholder: 'Code goes here...',
             viewportMargin: Infinity,
@@ -51,7 +51,7 @@ $(document).ready(function() {
     );
 
     var t1 = performance.now();
-    console.log('Call to init CodeEditor took ' + (t1 - t0) + ' milliseconds.');
+    console.log('Call to init window.CodeEditor took ' + (t1 - t0) + ' milliseconds.');
 
     function handleCommand(commands) {
         var cmds = commands.split(' ');
@@ -135,8 +135,8 @@ $(document).ready(function() {
             }
         });
 
-        CodeEditor.setOption('mode', obj.mode);
-        CodeEditor.setOption('theme', obj.theme);
+        window.CodeEditor.setOption('mode', obj.mode);
+        window.CodeEditor.setOption('theme', obj.theme);
     })();
 
     $('#treeview').on('click', 'li', function() {
@@ -150,9 +150,40 @@ $(document).ready(function() {
         $(this).siblings().removeClass('active');
         $(this).addClass('active');
 
-        var fileName = $(this).find('span').text();
+        var fileName = $(this).find('.hidden').text();
         edit(fileName);
     });
+
+    function closeTab(event) {
+        var parent = $(event.toElement).parent('li');
+
+        var fileName = parent.find('.hidden').text();
+        var index = window.OpenFiles.indexOf(fileName);
+
+        parent.removeClass('active');
+
+        var newOpen = parent.prev();
+        if (!newOpen)
+            newOpen = parent.next();
+
+        if (newOpen) {
+            newOpen.addClass('active');
+
+            var newFile = newOpen.find('.hidden').text();
+            if (newFile) {
+                edit(newFile);
+            }
+        }
+
+        if (index !== -1) {
+            window.OpenFiles.splice(index, 1);
+            parent.remove();
+
+            if (window.OpenFiles.length === 0) {
+                window.CodeEditor.setValue('');
+            }
+        }
+    }
 
     function addToOpenFiles(fileName) {
         var index = window.OpenFiles.indexOf(fileName);
@@ -168,7 +199,9 @@ $(document).ready(function() {
         of.children().removeClass('active');
 
         var span = $('<span>').text(fileName).addClass('hidden');
-        var li = $('<li/>').text(name).addClass('active').append(span);
+        var close = $('<span>').addClass('close').click(closeTab);
+
+        var li = $('<li/>').text(name).addClass('active').append(span).append(close);
         of.append(li);
     }
 
@@ -176,7 +209,7 @@ $(document).ready(function() {
         $('#fileName').val(fileName);
 
         var data = fs.readFileSync(fileName, 'utf-8');
-        CodeEditor.setValue(data);
+        window.CodeEditor.setValue(data);
     }
 
     function openFile(fileName) {
@@ -221,13 +254,13 @@ $(document).ready(function() {
         }
 
         if (fileName.length !== 0) {
-            fs.writeFileSync(fileName, CodeEditor.getValue(), 'utf-8');
+            fs.writeFileSync(fileName, window.CodeEditor.getValue(), 'utf-8');
         } else {
             dialog.showSaveDialog(function(fileName) {
                 if (fileName === undefined)
                     return false;
 
-                fs.writeFileSync(fileName, CodeEditor.getValue(), 'utf-8');
+                fs.writeFileSync(fileName, window.CodeEditor.getValue(), 'utf-8');
 
                 return false;
             });
@@ -236,14 +269,14 @@ $(document).ready(function() {
 
     $('#theme').change(function() {
         var theme = $(this).find('option:selected').val();
-        CodeEditor.setOption('theme', theme);
+        window.CodeEditor.setOption('theme', theme);
 
         return false;
     });
 
     $('#mode').change(function() {
         var mode = $(this).find('option:selected').val();
-        CodeEditor.setOption('mode', mode);
+        window.CodeEditor.setOption('mode', mode);
 
         return false;
     });

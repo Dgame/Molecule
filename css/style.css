@@ -161,11 +161,11 @@ p {
 }
 
 #treeview li span.file {
-    background: url('jquery/treeview/images/file.gif') left no-repeat;
+    background: url('../jquery/treeview/images/file.gif') left no-repeat;
 }
 
 #treeview li span.folder {
-    background: url('jquery/treeview/images/folder.gif') left no-repeat;
+    background: url('../jquery/treeview/images/folder.gif') left no-repeat;
 }
 
 #treeview li:hover {
@@ -177,7 +177,7 @@ p {
 }
 
 #open-files li {
-    width: 180px;
+    width: 210px;
     text-align: center;
     float: left;
     margin-right: 5px;
@@ -192,4 +192,11 @@ p {
 
 #open-files li.active {
     background-color: #fff;
+}
+
+#open-files li span.close {
+    width: 32px;
+    height: 20px;
+    display: inline-block;
+    background: url('images/close-icon.png') 16px 4px no-repeat;
 }
