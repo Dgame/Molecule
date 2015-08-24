@@ -20,10 +20,12 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+    var screen = require('screen');
+    var size = screen.getPrimaryDisplay().workAreaSize;
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        'width': 1920,
-        'height': 1080,
+        'width': size.width,
+        'height': size.height,
         'title': 'CodeEdit',
         'type': 'desktop',
         'auto-hide-menu-bar': true,
