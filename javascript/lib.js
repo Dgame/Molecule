@@ -50,9 +50,6 @@ $(document).ready(function() {
         }
     );
 
-    var t1 = performance.now();
-    console.log('Call to init window.CodeEditor took ' + (t1 - t0) + ' milliseconds.');
-
     function handleCommand(commands) {
         var cmds = commands.split(' ');
         if (cmds.length < 1)
@@ -112,14 +109,9 @@ $(document).ready(function() {
             edit(fileName);
         }
 
-        var ti0 = performance.now();
-
         var tree = $('#treeview');
         listTreeViewOf(__dirname, tree);
         tree.treeview();
-
-        var ti1 = performance.now();
-        console.log('Call to load treeview took ' + (ti1 - ti0) + ' milliseconds.');
 
         $('#mode').each(function() {
             if ($(this).text() == obj.mode) {
@@ -167,7 +159,8 @@ $(document).ready(function() {
             newOpen = parent.next();
 
         if (newOpen) {
-            newOpen.addClass('active');
+            if (!parent.siblings().hasClass('active'))
+                newOpen.addClass('active');
 
             var newFile = newOpen.find('.hidden').text();
             if (newFile) {
@@ -281,13 +274,11 @@ $(document).ready(function() {
         return false;
     });
 
-    var t2 = performance.now();
-    console.log('Call to load everything left took ' + (t2 - t1) + ' milliseconds.');
+    var t1 = performance.now();
+    console.log('Call to load everything took ' + (t1 - t0) + ' milliseconds.');
 });
 
 $(window).unload(function() {
-    var t0 = performance.now();
-
     var settings = {
         'open_files': window.OpenFiles,
         'theme': $('#theme').find('option:selected').val(),
@@ -296,7 +287,4 @@ $(window).unload(function() {
 
     var json = JSON.stringify(settings, null, 4);
     fs.writeFileSync(Settings.File, json, 'utf-8');
-
-    var t1 = performance.now();
-    console.log('Call to unload took ' + (t1 - t0) + ' milliseconds.');
 });
