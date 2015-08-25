@@ -47,5 +47,11 @@ module.exports = {
             var li = $('<li/>').text(name).addClass('active').append(span).append(close);
             of.append(li);
         };
+
+        this.openTabs = function(fileNames) {
+            for (var i = 0; i < fileNames.length; i++) {
+                self.openTab(fileNames[i]);
+            }
+        };
     }
 };

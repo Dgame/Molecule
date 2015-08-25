@@ -121,9 +121,7 @@ $(document).ready(function() {
         var obj = JSON.parse(data);
 
         if (obj.open_files.length !== 0) {
-            for (var i = 0; i < obj.open_files.length; i++) {
-                window.Tab.openTab(obj.open_files[i]);
-            }
+            window.Tab.openTabs(obj.open_files);
 
             var fileName = obj.open_files.pop();
             window.File.edit(fileName);
