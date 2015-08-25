@@ -2,16 +2,21 @@ var remote = require('remote');
 var dialog = remote.require('dialog');
 var fs = require('fs');
 
-var s = require(__dirname + '/javascript/Settings.js');
-var Settings = new s.Settings('json/settings.json');
-
 window.$ = window.jQuery = require(__dirname + '/jquery/jquery-2.1.4.min.js');
 window.OpenFiles = [];
 
 require(__dirname + '/jquery/treeview/jquery.treeview.js');
 
+var my_s = require(__dirname + '/javascript/Settings.js');
+var my_edit = require(__dirname + '/javascript/File.js');
+var my_tab = require(__dirname + '/javascript/Tab.js');
+
 $(document).ready(function() {
     var t0 = performance.now();
+
+    window.Settings = new my_s.Settings('json/settings.json');
+    window.File = new my_edit.File();
+    window.Tab = new my_tab.Tab();
 
     window.CodeEditor = CodeMirror.fromTextArea(
         document.getElementById('editor'), {
@@ -22,17 +27,17 @@ $(document).ready(function() {
                 column: Settings.Values.LineLength,
                 lineStyle: 'dashed'
             }],
-            showTrailingSpace: Settings.Values.ShowTrailingSpace,
-            lineNumbers: Settings.Values.ShowLineNumbers,
-            styleActiveLine: Settings.Values.StyleActiveLine,
-            autoCloseBrackets: Settings.Values.AutoCloseBrackets,
-            matchBrackets: Settings.Values.MatchBrackets,
-            lineWrapping: Settings.Values.LineWrapping,
-            indentUnit: Settings.Values.IndentUnit,
-            smartIndent: Settings.Values.SmartIndent,
-            tabSize: Settings.Values.TabSize,
-            indentWithTabs: Settings.Values.IndentWithTabs,
-            autofocus: Settings.Values.AutoFocus,
+            showTrailingSpace: window.Settings.Values.ShowTrailingSpace,
+            lineNumbers: window.Settings.Values.ShowLineNumbers,
+            styleActiveLine: window.Settings.Values.StyleActiveLine,
+            autoCloseBrackets: window.Settings.Values.AutoCloseBrackets,
+            matchBrackets: window.Settings.Values.MatchBrackets,
+            lineWrapping: window.Settings.Values.LineWrapping,
+            indentUnit: window.Settings.Values.IndentUnit,
+            smartIndent: window.Settings.Values.SmartIndent,
+            tabSize: window.Settings.Values.TabSize,
+            indentWithTabs: window.Settings.Values.IndentWithTabs,
+            autofocus: window.Settings.Values.AutoFocus,
             extraKeys: {
                 'Ctrl-Space': 'autocomplete',
                 'Ctrl-F': 'findPersistent',
@@ -44,31 +49,14 @@ $(document).ready(function() {
                         }
                     );
                 },
-                'Ctrl-S': saveFile
+                'Ctrl-S': window.File.saveFile
             },
             globalVars: true
         }
     );
 
-    var FileState = {
-        Saved: 0,
-        UnSaved: 1
-    };
-    Object.freeze(FileState);
-
-    function setFileState(state) {
-        var current = $('#open-files').find('.active');
-        var isAlreadChanged = current.hasClass('.changed');
-
-        if ((state === undefined || state === FileState.UnSaved) && !isAlreadChanged) {
-            current.addClass('changed');
-        } else if (state === FileState.Saved && isAlreadChanged) {
-            current.removeClass('changed');
-        }
-    }
-
     window.CodeEditor.on('inputRead', function() {
-        setFileState(FileState.Unsaved);
+        window.File.setState(window.File.State.UnSaved);
     });
 
     function handleCommand(commands) {
@@ -79,9 +67,9 @@ $(document).ready(function() {
         var cmd = cmds.shift();
         switch (cmd) {
             case 'open':
-                return openFile(cmds);
+                return window.File.openFiles(cmds);
             case 'save':
-                return saveFile(cmds);
+                return window.File.saveFile(cmds);
         }
     }
 
@@ -117,170 +105,38 @@ $(document).ready(function() {
         }
     }
 
+    $('#treeview').on('click', 'li', function() {
+        var path = $(this).find('.hidden').text();
+        if (path.length !== 0) {
+            window.File.openFile(path);
+        }
+    });
+
+    $('#open-files').on('click', 'li', function() {
+        window.Tab.switchTo($(this));
+    });
+
     (function init() {
         var data = fs.readFileSync(Settings.File, 'utf-8');
         var obj = JSON.parse(data);
 
         if (obj.open_files.length !== 0) {
             for (var i = 0; i < obj.open_files.length; i++) {
-                addToOpenFiles(obj.open_files[i]);
+                window.Tab.openTab(obj.open_files[i]);
             }
 
             var fileName = obj.open_files.pop();
-            edit(fileName);
+            window.File.edit(fileName);
         }
 
         var tree = $('#treeview');
         listTreeViewOf(__dirname, tree);
         tree.treeview();
 
-        $('#mode').each(function() {
-            if ($(this).text() == obj.mode) {
-                $(this).prop('selected', true);
-                return false;
-            }
-        });
+        $('#theme').prop('selected', false).val(obj.theme).prop('selected', true);
 
-        $('#theme').each(function() {
-            if ($(this).text() == obj.theme) {
-                $(this).prop('selected', true);
-                return false;
-            }
-        });
-
-        window.CodeEditor.setOption('mode', obj.mode);
         window.CodeEditor.setOption('theme', obj.theme);
     })();
-
-    $('#treeview').on('click', 'li', function() {
-        var path = $(this).find('.hidden').text();
-        if (path.length !== 0) {
-            openFile(path);
-        }
-    });
-
-    $('#open-files').on('click', 'li', function() {
-        var elem = $(this);
-
-        elem.siblings().removeClass('active');
-        elem.addClass('active');
-
-        var fileName = elem.find('.hidden').text();
-        edit(fileName);
-    });
-
-    function closeTab(event) {
-        var parent = $(event.toElement).parent('li');
-
-        var fileName = parent.find('.hidden').text();
-        var index = window.OpenFiles.indexOf(fileName);
-
-        parent.removeClass('active');
-
-        var newOpen = parent.prev();
-        if (!newOpen)
-            newOpen = parent.next();
-
-        if (newOpen) {
-            if (!parent.siblings().hasClass('active'))
-                newOpen.addClass('active');
-
-            var newFile = newOpen.find('.hidden').text();
-            if (newFile)
-                edit(newFile);
-        }
-
-        if (index !== -1) {
-            parent.remove();
-            window.OpenFiles.splice(index, 1);
-            if (window.OpenFiles.length === 0)
-                window.CodeEditor.setValue('');
-        }
-    }
-
-    function addToOpenFiles(fileName) {
-        var index = window.OpenFiles.indexOf(fileName);
-        if (index !== -1) {
-            return false;
-        }
-
-        window.OpenFiles.push(fileName);
-
-        var name = fileName.split('/').pop();
-
-        var of = $('#open-files');
-        of.children().removeClass('active');
-
-        var span = $('<span>').text(fileName).addClass('hidden');
-        var close = $('<span>').addClass('close').click(closeTab);
-
-        var li = $('<li/>').text(name).addClass('active').append(span).append(close);
-        of.append(li);
-    }
-
-    function edit(fileName) {
-        $('#fileName').val(fileName);
-
-        var data = fs.readFileSync(fileName, 'utf-8');
-        window.CodeEditor.setValue(data);
-    }
-
-    function openFile(fileName) {
-        if (fileName == $('#fileName').val())
-            return false;
-
-        edit(fileName);
-        addToOpenFiles(fileName);
-    }
-
-    function openFiles(files) {
-        if (files.length !== 0) {
-            for (var i = 0; i < files.length; i++) {
-                openFile(files[i]);
-            }
-
-            return true;
-        }
-
-        dialog.showOpenDialog({
-                properties: [
-                    'openFile',
-                    'openDirectory',
-                    'multiSelections'
-                ]
-            },
-            function(fileNames) {
-                if (fileNames === undefined)
-                    return false;
-
-                openFiles(fileNames);
-
-                return false;
-            }
-        );
-    }
-
-    function saveFile(files) {
-        var fileName = $('#fileName').val();
-        if (fileName.length === 0 && files.length !== 0) {
-            fileName = files.shift();
-        }
-
-        if (fileName.length !== 0) {
-            fs.writeFileSync(fileName, window.CodeEditor.getValue(), 'utf-8');
-        } else {
-            dialog.showSaveDialog(function(fileName) {
-                if (fileName === undefined)
-                    return false;
-
-                fs.writeFileSync(fileName, window.CodeEditor.getValue(), 'utf-8');
-
-                return false;
-            });
-        }
-
-        setFileState(FileState.Saved);
-    }
 
     $('#theme').change(function() {
         var theme = $(this).find('option:selected').val();
@@ -303,10 +159,9 @@ $(document).ready(function() {
 $(window).unload(function() {
     var settings = {
         'open_files': window.OpenFiles,
-        'theme': $('#theme').find('option:selected').val(),
-        'mode': $('#mode').find('option:selected').val(),
+        'theme': $('#theme').find('option:selected').val()
     };
 
     var json = JSON.stringify(settings, null, 4);
-    fs.writeFileSync(Settings.File, json, 'utf-8');
+    fs.writeFileSync(window.Settings.File, json, 'utf-8');
 });
