@@ -50,6 +50,27 @@ $(document).ready(function() {
         }
     );
 
+    var FileState = {
+        Saved: 0,
+        UnSaved: 1
+    };
+    Object.freeze(FileState);
+
+    function setFileState(state) {
+        var current = $('#open-files').find('.active');
+        var isAlreadChanged = current.hasClass('.changed');
+
+        if ((state === undefined || state === FileState.UnSaved) && !isAlreadChanged) {
+            current.addClass('changed');
+        } else if (state === FileState.Saved && isAlreadChanged) {
+            current.removeClass('changed');
+        }
+    }
+
+    window.CodeEditor.on('inputRead', function() {
+        setFileState(FileState.Unsaved);
+    });
+
     function handleCommand(commands) {
         var cmds = commands.split(' ');
         if (cmds.length < 1)
@@ -139,10 +160,12 @@ $(document).ready(function() {
     });
 
     $('#open-files').on('click', 'li', function() {
-        $(this).siblings().removeClass('active');
-        $(this).addClass('active');
+        var elem = $(this);
 
-        var fileName = $(this).find('.hidden').text();
+        elem.siblings().removeClass('active');
+        elem.addClass('active');
+
+        var fileName = elem.find('.hidden').text();
         edit(fileName);
     });
 
@@ -255,6 +278,8 @@ $(document).ready(function() {
                 return false;
             });
         }
+
+        setFileState(FileState.Saved);
     }
 
     $('#theme').change(function() {

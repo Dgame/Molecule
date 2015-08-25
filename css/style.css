@@ -156,6 +156,10 @@ p {
     display: none;
 }
 
+.changed:before {
+    content: '*';
+}
+
 #treeview li span {
     padding-left: 25px;
 }
