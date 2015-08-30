@@ -1,248 +1,144 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Molecule</title>
-
-    <link type="text/css" rel="stylesheet" href="codemirror/lib/codemirror.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/addon/dialog/dialog.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/addon/search/matchesonscrollbar.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/3024-night.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/ambiance.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/base16-dark.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/base16-light.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/blackboard.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/cobalt.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/colorforth.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/dracula.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/eclipse.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/elegant.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/erlang-dark.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/icecoder.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/lesser-dark.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/liquibyte.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/material.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/mbo.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/mdn-like.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/midnight.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/monokai.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/neat.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/neo.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/night.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/paraiso-dark.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/paraiso-light.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/pastel-on-dark.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/rubyblue.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/seti.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/solarized.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/the-matrix.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/tomorrow-night-bright.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/tomorrow-night-eighties.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/ttcn.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/twilight.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/vibrant-ink.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/xq-dark.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/xq-light.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/yeti.css" />
-    <link type="text/css" rel="stylesheet" href="codemirror/theme/zenburn.css" />
-
-    <link type="text/css" rel="stylesheet" href="css/style.css" />
-    <link type="text/css" rel="stylesheet" href="jquery/treeview/jquery.treeview.css" />
-
-    <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
-    <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
-    <script type="text/javascript" src="javascript/lib.js"></script>
-
-    <script src="codemirror/addon/display/placeholder.js"></script>
-    <script src="codemirror/addon/display/rulers.js"></script>
-    <script src="codemirror/addon/edit/trailingspace.js"></script>
-    <script src="codemirror/addon/edit/closebrackets.js"></script>
-    <script src="codemirror/addon/selection/active-line.js"></script>
-    <script src="codemirror/addon/dialog/dialog.js"></script>
-    <script src="codemirror/addon/search/searchcursor.js"></script>
-    <script src="codemirror/addon/search/search.js"></script>
-    <script src="codemirror/addon/display/fullscreen.js"></script>
-    <script src="codemirror/addon/display/panel.js"></script>
-
-    <script src="codemirror/mode/apl/apl.js"></script>
-    <script src="codemirror/mode/brainfuck/brainfuck.js"></script>
-    <script src="codemirror/mode/clike/clike.js"></script>
-    <script src="codemirror/mode/clojure/clojure.js"></script>
-    <script src="codemirror/mode/cmake/cmake.js"></script>
-    <script src="codemirror/mode/cobol/cobol.js"></script>
-    <script src="codemirror/mode/coffeescript/coffeescript.js"></script>
-    <script src="codemirror/mode/commonlisp/commonlisp.js"></script>
-    <script src="codemirror/mode/css/css.js"></script>
-    <script src="codemirror/mode/d/d.js"></script>
-    <script src="codemirror/mode/dart/dart.js"></script>
-    <script src="codemirror/mode/diff/diff.js"></script>
-    <script src="codemirror/mode/django/django.js"></script>
-    <script src="codemirror/mode/eiffel/eiffel.js"></script>
-    <script src="codemirror/mode/erlang/erlang.js"></script>
-    <script src="codemirror/mode/fortran/fortran.js"></script>
-    <script src="codemirror/mode/go/go.js"></script>
-    <script src="codemirror/mode/groovy/groovy.js"></script>
-    <script src="codemirror/mode/haskell/haskell.js"></script>
-    <script src="codemirror/mode/haxe/haxe.js"></script>
-    <script src="codemirror/mode/htmlembedded/htmlembedded.js"></script>
-    <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
-    <script src="codemirror/mode/jade/jade.js"></script>
-    <script src="codemirror/mode/javascript/javascript.js"></script>
-    <script src="codemirror/mode/julia/julia.js"></script>
-    <script src="codemirror/mode/livescript/livescript.js"></script>
-    <script src="codemirror/mode/lua/lua.js"></script>
-    <script src="codemirror/mode/markdown/markdown.js"></script>
-    <script src="codemirror/mode/mathematica/mathematica.js"></script>
-    <script src="codemirror/mode/octave/octave.js"></script>
-    <script src="codemirror/mode/pascal/pascal.js"></script>
-    <script src="codemirror/mode/perl/perl.js"></script>
-    <script src="codemirror/mode/php/php.js"></script>
-    <script src="codemirror/mode/puppet/puppet.js"></script>
-    <script src="codemirror/mode/python/python.js"></script>
-    <script src="codemirror/mode/r/r.js"></script>
-    <script src="codemirror/mode/ruby/ruby.js"></script>
-    <script src="codemirror/mode/rust/rust.js"></script>
-    <script src="codemirror/mode/scheme/scheme.js"></script>
-    <script src="codemirror/mode/shell/shell.js"></script>
-    <script src="codemirror/mode/smalltalk/smalltalk.js"></script>
-    <script src="codemirror/mode/smarty/smarty.js"></script>
-    <script src="codemirror/mode/sql/sql.js"></script>
-    <script src="codemirror/mode/swift/swift.js"></script>
-    <script src="codemirror/mode/tcl/tcl.js"></script>
-    <script src="codemirror/mode/turtle/turtle.js"></script>
-    <script src="codemirror/mode/vbscript/vbscript.js"></script>
-    <script src="codemirror/mode/xml/xml.js"></script>
-    <script src="codemirror/mode/xquery/xquery.js"></script>
-    <script src="codemirror/mode/yaml/yaml.js"></script>
+    <title>Editor</title>
+    <link rel="stylesheet" type="text/css" href="css/w2ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 <body>
-    <div id="dialog" style="display: none">
-        <input type="text" value="" name="cmd" id="cmd" placeholder="Command?" />
-    </div>
 
-    <p>
-        <input type="hidden" name="fileName" id="fileName" value="" />
-    </p>
+<script src="javascript/ace-builds/src-noconflict/ace.js" type="text/javascript"></script>
 
-    <div id="file-sidebar">
-        <strong>Files:</strong>
-        <ul id="treeview"></ul>
-    </div>
+<script src="javascript/File.js" type="text/javascript"></script>
+<script src="javascript/Tab.js" type="text/javascript"></script>
 
-    <div id="content">
-        <ul id="open-files"></ul>
-        <br />
-        <p>
-            <textarea id="editor" name="editor"></textarea>
-        </p>
-    </div>
+<div id="layout"></div>
 
-    <div id="select">
-        <select id="mode">
-            <option value="text/apl">APL</option>
-            <option value="text/x-brainfuck">Brainfuck</option>
-            <option value="text/x-csrc">C</option>
-            <option value="text/x-c++src">C++</option>
-            <option value="text/x-csharp">C#</option>
-            <option value="text/x-clojure">Clojure</option>
-            <option value="text/x-cmake">CMake</option>
-            <option value="text/x-cobol">Cobol</option>
-            <option value="text/x-coffeescript">CoffeeScript</option>
-            <option value="text/x-common-lisp">CommonLisp</option>
-            <option value="text/css">CSS</option>
-            <option value="text/x-d">D</option>
-            <option value="application/dart">Dart</option>
-            <option value="text/x-diff">Diff</option>
-            <option value="text/x-django">Django</option>
-            <option value="text/x-eiffel">Eiffel</option>
-            <option value="text/x-erlang">Erlang</option>
-            <option value="text/x-Fortran">Fortran</option>
-            <option value="text/x-fsharp">F#</option>
-            <option value="text/x-go">Go</option>
-            <option value="text/x-groovy">Groovy</option>
-            <option value="text/x-haskell">Haskell</option>
-            <option value="text/x-haxe">Haxe</option>
-            <option value="text/html">HTML</option>
-            <option value="text/x-jade">Jade</option>
-            <option value="text/x-java">Java</option>
-            <option value="text/javascript">Javascript</option>
-            <option value="application/json">JSON</option>
-            <option value="text/x-julia">Julia</option>
-            <option value="text/x-livescript">Livescript</option>
-            <option value="text/x-less">LESS</option>
-            <option value="text/x-lua">Lua</option>
-            <option value="text/x-markdown">Markdown</option>
-            <option value="text/x-mathematica">Mathematica</option>
-            <option value="text/x-ocaml">OCaml</option>
-            <option value="text/x-pascal">Pascal</option>
-            <option value="text/x-perl">Perl</option>
-            <option value="text/x-php">PHP</option>
-            <option value="text/x-smarty">PHP - Smarty</option>
-            <option value="application/x-httpd-php">PHP -HTML</option>
-            <option value="text/x-puppet">Puppet</option>
-            <option value="text/x-python">Python</option>
-            <option value="text/x-rsrc">R</option>
-            <option value="text/x-ruby">Ruby</option>
-            <option value="text/x-rustsrc">Rust</option>
-            <option value="text/x-scheme">Scheme</option>
-            <option value="text/x-sh">Shell</option>
-            <option value="text/x-stsrc">Smalltalk</option>
-            <option value="text/x-sql">SQL</option>
-            <option value="text/x-mysql">MySQL</option>
-            <option value="text/x-swift">Swift</option>
-            <option value="text/x-tcl">Tcl</option>
-            <option value="text/typescript">Typescript</option>
-            <option value="text/turtle">Turtle</option>
-            <option value="text/vbscript">VBScript</option>
-            <option value="text/x-vb">VB.NET</option>
-            <option value="text/html">XML</option>
-            <option value="text/x-hxml">X-HTML</option>
-            <option value="application/xquery">XQuery</option>
-            <option value="text/x-yaml">Yaml</option>
-        </select>
+<div id="tabs"></div>
+<input type="hidden" name="filename" id="filename" value="" />
+<input type="text" name="cmd" value="" id="cmd" placeholder="Command"/>
+<div id="editor"></div>
 
-        <select id="theme">
-            <option value="default">Default</option>
-            <option value="3024-day">3024-Day</option>
-            <option value="3024-night">3024-Night</option>
-            <option value="ambiance">Ambiance</option>
-            <option value="base16-dark">Base16-Dark</option>
-            <option value="base16-light">Base16-Light</option>
-            <option value="blackboard">Blackboard</option>
-            <option value="cobalt">Cobalt</option>
-            <option value="colorforth">Colorforth</option>
-            <option value="dracula">Dracula</option>
-            <option value="eclipse">Eclipse</option>
-            <option value="elegant">Elegant</option>
-            <option value="erlang-dark">Erlang-Dark</option>
-            <option value="icecoder">Icecoder</option>
-            <option value="lesser-dark">Lesser-Dark</option>
-            <option value="liquibyte">Liquibyte</option>
-            <option value="material">Material</option>
-            <option value="mbo">MBO</option>
-            <option value="mdn-like">MDN-like</option>
-            <option value="midnight">Midnight</option>
-            <option value="monokai">Monokai</option>
-            <option value="neat">Neat</option>
-            <option value="neo">Neo</option>
-            <option value="night">Night</option>
-            <option value="paraiso-dark">Paraiso-Dark</option>
-            <option value="paraiso-light">Paraiso-Light</option>
-            <option value="pastel-on-dark">Pastel-on-Dark</option>
-            <option value="rubyblue">Rubyblue</option>
-            <option value="seti">Seti</option>
-            <option value="solarized dark">Solarized Dark</option>
-            <option value="solarized light">Solarized Light</option>
-            <option value="the-matrix">The-Matrix</option>
-            <option value="tomorrow-night-bright">Tomorrow-Night-Bright</option>
-            <option value="tomorrow-night-eighties">Tomorrow-Night-Eighties</option>
-            <option value="ttcn">TTCN</option>
-            <option value="twilight">Twilight</option>
-            <option value="vibrant-ink">Vibrant-Ink</option>
-            <option value="xq-dark">XQ-Dark</option>
-            <option value="xq-light">XQ-Light</option>
-            <option value="yeti">Yeti</option>
-            <option value="zenburn">Zenburn</option>
-        </select>
-    </div>
+<script type="text/javascript">
+var start = window.performance.now();
+
+var remote = require('remote');
+
+window.Dialog = remote.require('dialog');
+window.FS = require('fs');
+
+window.$ = window.jQuery = require(__dirname + '/javascript/jquery/jquery-2.1.4.min.js');
+
+window.File = new File();
+window.Tab = new Tab();
+
+window.Editor = ace.edit('editor');
+window.Editor.setTheme('ace/theme/chrome');
+window.Editor.getSession().setMode('ace/mode/text');
+window.Editor.$blockScrolling = Infinity;
+
+window.Editor.commands.addCommand({
+    name: 'save',
+    bindKey: {win: 'Ctrl-S'},
+    exec: function(editor) {
+        window.File.Save(editor);
+    }
+});
+
+window.Editor.commands.addCommand({
+    name: 'cmd',
+    bindKey: {win: 'Ctrl-P'},
+    exec: function(editor) {
+        var cmd = $('#cmd');
+        cmd.show();
+        cmd.focus();
+    }
+});
+</script>
+
+<script src="javascript/w2ui/w2ui.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+$(function () {
+    $('#tabs').w2tabs({
+        name: 'tabs',
+        active: 'tab1',
+        tabs: [{id: 'tab1', caption: 'Untitled', closable: true}],
+        onClick: function(event) {
+            window.Tab.Exchange(event.object.text);
+        },
+        onClose: function(event) {
+            window.Tab.Close(event.object.text);
+        }
+    });
+
+    $('#layout').w2layout({
+        name: 'layout',
+        panels: [
+            { type: 'left', size: 200, resizable: true, style: 'background-color: #F5F6F7;', content: 'left' },
+            { type: 'main', style: 'background-color: #F5F6F7; padding: 5px;' }
+        ]
+    });
+
+    $('#cmd').keypress(function(event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            alert($(this).val());
+            $(this).hide();
+        }
+    });
+
+    var sidebarNr = 0;
+    function readDirectory(folder) {
+        var entries = window.FS.readdirSync(folder);
+        var len = entries.length;
+
+        var nodes = new Array(len);
+
+        for (var i = 0; i < len; i++) {
+            var file = entries[i];
+            var obj = {text: file, img: 'icon-page'};
+
+            var path = folder + '/' + file;
+            var stat = window.FS.statSync(path);
+
+            if (stat && stat.isDirectory()) {
+                if (file.split('/').pop()[0] === '.') {
+                    continue;
+                }
+
+                obj.id = 'Folder-' + sidebarNr;
+                obj.img = 'icon-folder';
+
+                sidebarNr += 1;
+
+                obj.nodes = readDirectory(path);
+            } else {
+                obj.id = 'File-' + sidebarNr;
+                obj.img = 'icon-page';
+            }
+
+            sidebarNr += 1;
+
+            nodes[i] = obj;
+        }
+
+        return nodes;
+    }
+
+    w2ui['layout'].content('left', $().w2sidebar({
+        name: 'sidebar',
+        img: null,
+        nodes: readDirectory(__dirname),
+        onClick: function(event) {
+            window.File.Open(event.node.text);
+        }
+    }));
+});
+
+var end = window.performance.now();
+
+console.log(start + ' to ' + end + ' = ' + (end - start) + 'ms');
+</script>
 </body>
 </html>
