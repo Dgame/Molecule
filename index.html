@@ -3,92 +3,74 @@
 <head>
     <title>Editor</title>
     <link rel="stylesheet" type="text/css" href="css/w2ui.min.css" />
-    <style type="text/css" media="screen">
-        #tabs {
-            width: 60%;
-            background-color: #fff !important;
-        }
-
-        #layout {
-            border-top: 1px solid #bbb;
-
-            margin-top: 28px;
-
-            width: 200px;
-            height: 400px;
-
-            float: left;
-        }
-
-        #editor {
-            font-size: 14px;
-            font-family: consolas;
-
-            margin-top: 0px;
-
-            width: 60%;
-            height: 400px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 <body>
+
+<script src="javascript/ace-builds/src-noconflict/ace.js" type="text/javascript"></script>
+
+<script src="javascript/File.js" type="text/javascript"></script>
+<script src="javascript/Tab.js" type="text/javascript"></script>
 
 <div id="layout"></div>
 
 <div id="tabs"></div>
 <input type="hidden" name="filename" id="filename" value="" />
+<input type="text" name="cmd" value="" id="cmd" placeholder="Command"/>
 <div id="editor"></div>
 
 <script type="text/javascript">
 var start = window.performance.now();
 
 var remote = require('remote');
-var dialog = remote.require('dialog');
-var fs = require('fs');
+
+window.Dialog = remote.require('dialog');
+window.FS = require('fs');
 
 window.$ = window.jQuery = require(__dirname + '/javascript/jquery/jquery-2.1.4.min.js');
+
+window.File = new File();
+window.Tab = new Tab();
+
+window.Editor = ace.edit('editor');
+window.Editor.setTheme('ace/theme/chrome');
+window.Editor.getSession().setMode('ace/mode/text');
+window.Editor.$blockScrolling = Infinity;
+
+window.Editor.commands.addCommand({
+    name: 'save',
+    bindKey: {win: 'Ctrl-S'},
+    exec: function(editor) {
+        window.File.Save(editor);
+    }
+});
+
+window.Editor.commands.addCommand({
+    name: 'cmd',
+    bindKey: {win: 'Ctrl-P'},
+    exec: function(editor) {
+        var cmd = $('#cmd');
+        cmd.show();
+        cmd.focus();
+    }
+});
 </script>
 
-<script src="javascript/ace-builds/src-noconflict/ace.js" type="text/javascript"></script>
-<script type="text/javascript" src="javascript/w2ui/w2ui.min.js"></script>
+<script src="javascript/w2ui/w2ui.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 $(function () {
-    window.Editor = ace.edit('editor');
-    window.Editor.setTheme('ace/theme/chrome');
-    window.Editor.getSession().setMode('ace/mode/javascript');
-    window.Editor.$blockScrolling = Infinity;
-
-    window.Editor.commands.addCommand({
-        name: 'save',
-        bindKey: {win: 'Ctrl-S'},
-        exec: function(editor) {
-            var path = $('#filename').val();
-            if (path.length !== 0) {
-                fs.writeFileSync(path, editor.getValue(), 'utf8');
-            }
-        }
-    });
-
-    var before_tabs = window.performance.now();
-
     $('#tabs').w2tabs({
         name: 'tabs',
         active: 'tab1',
         tabs: [{id: 'tab1', caption: 'Untitled', closable: true}],
         onClick: function(event) {
-            switchTab(event);
+            window.Tab.Exchange(event.object.text);
         },
         onClose: function(event) {
-            closeTab(event);
+            window.Tab.Close(event.object.text);
         }
     });
-
-    var after_tabs = window.performance.now();
-
-    console.log('Tabs: ' + (after_tabs - before_tabs));
-
-    var before_layout = window.performance.now();
 
     $('#layout').w2layout({
         name: 'layout',
@@ -98,28 +80,30 @@ $(function () {
         ]
     });
 
-    var after_layout = window.performance.now();
-
-    console.log('Layout: ' + (after_layout - before_layout));
+    $('#cmd').keypress(function(event) {
+        if (event.which === 13) {
+            event.preventDefault();
+            alert($(this).val());
+            $(this).hide();
+        }
+    });
 
     var sidebarNr = 0;
     function readDirectory(folder) {
-        var entries = fs.readdirSync(folder);
+        var entries = window.FS.readdirSync(folder);
         var len = entries.length;
 
         var nodes = new Array(len);
 
         for (var i = 0; i < len; i++) {
             var file = entries[i];
+            var obj = {text: file, img: 'icon-page'};
 
             var path = folder + '/' + file;
-            var stat = fs.statSync(path);
-
-            var obj = {text: file, img: 'icon-page'};
+            var stat = window.FS.statSync(path);
 
             if (stat && stat.isDirectory()) {
                 if (file.split('/').pop()[0] === '.') {
-                    console.log('Ignore ' + file);
                     continue;
                 }
 
@@ -142,90 +126,19 @@ $(function () {
         return nodes;
     }
 
-    window.openTabs = [];
-
-    function genTabID(tid) {
-        return 'tab' + tid;
-    }
-
-    function openTab(fileName) {
-        if (window.openTabs.length !== 0) {
-            var tab_id = genTabID(window.openTabs.length + 1);
-            var tab = {id: tab_id, caption: fileName, closable: true};
-
-            w2ui.tabs.add(tab);
-            w2ui.tabs.click(tab_id);
-        } else {
-            w2ui.tabs.tabs[0].caption = fileName;
-            w2ui.tabs.refresh();
-        }
-
-        window.openTabs.push(fileName);
-    }
-
-    function closeTab(event) {
-        var index = window.openTabs.indexOf(event.object.text);
-        if (index !== -1) {
-            window.openTabs.splice(index, 1);
-            if (window.openTabs.length !== 0) {
-                var tab_id = genTabID(1);
-                w2ui.tabs.click(tab_id);
-            } else {
-                openTab('Untitled', 1);
-            }
-        }
-    }
-
-    function switchTab(event) {
-        if (event) {
-            edit(event.object.text);
-        }
-    }
-
-    function openFile(fileName) {
-        var path = __dirname + '/' + fileName;
-        if ($('#filename').val() == path) {
-            return false;
-        }
-
-        var stat = fs.statSync(path);
-        if (stat && stat.isDirectory()) {
-            return false;
-        }
-
-        openTab(fileName);
-        edit(fileName);
-    }
-
-    function edit(fileName) {
-        var path = __dirname + '/' + fileName;
-        $('#filename').val(path);
-
-        var data = fs.readFileSync(path);
-
-        window.Editor.setValue(data.toString());
-        window.Editor.clearSelection();
-    }
-
-    var before_sidebar = window.performance.now();
-
     w2ui['layout'].content('left', $().w2sidebar({
         name: 'sidebar',
         img: null,
         nodes: readDirectory(__dirname),
         onClick: function(event) {
-            openFile(event.node.text);
+            window.File.Open(event.node.text);
         }
     }));
-
-    var after_sidebar = window.performance.now();
-
-    console.log('Sidebar: ' + (after_sidebar - before_sidebar));
-
-    var end = window.performance.now();
-
-    console.log('Duration: from ' + start + ' to ' + end + ' = ' + (end - start));
 });
+
+var end = window.performance.now();
+
+console.log(start + ' to ' + end + ' = ' + (end - start) + 'ms');
 </script>
 </body>
 </html>
