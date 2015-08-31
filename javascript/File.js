@@ -32,7 +32,7 @@ function File() {
 
         console.log('edit ' + path);
 
-        if ($('#filename') == path) {
+        if ($('#filename').val() == path) {
             return false;
         }
 
@@ -41,21 +41,25 @@ function File() {
         try {
             var data = window.FS.readFileSync(path);
 
-            var dot_pos = fileName.lastIndexOf('.');
-            if (dot_pos !== -1) {
-                var mode = fileName.substr(dot_pos + 1);
-                if (mode in this._modes) {
-                    mode = this._modes[mode];
-                }
-
-                window.Editor.getSession().setMode('ace/mode/' + mode);
-            }
+            this.DetectModeOf(fileName);
 
             window.Editor.setValue(data.toString());
             window.Editor.clearSelection();
         } catch (err) {
             window.Editor.setValue('');
             console.log('No such file: ' + err);
+        }
+    };
+
+    this.DetectModeOf = function(fileName) {
+        var dot_pos = fileName.lastIndexOf('.');
+        if (dot_pos !== -1) {
+            var mode = fileName.substr(dot_pos + 1);
+            if (mode in this._modes) {
+                mode = this._modes[mode];
+            }
+
+            window.Editor.getSession().setMode('ace/mode/' + mode);
         }
     };
 

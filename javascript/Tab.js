@@ -39,10 +39,10 @@ function Tab() {
             w2ui.tabs.click(tab.id);
         } else {
             tab.caption = fileName;
+            w2ui.tabs.refresh();
+
             window.File.Edit(event);
         }
-
-        w2ui.tabs.refresh();
     };
 
     this.Close = function(event) {

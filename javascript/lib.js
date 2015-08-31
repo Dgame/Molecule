@@ -1,3 +1,5 @@
+var start = window.performance.now();
+
 $(function() {
     $('#tabs').w2tabs({
         name: 'tabs',
@@ -93,5 +95,4 @@ $(function() {
 });
 
 var end = window.performance.now();
-
-console.log(start + ' to ' + end + ' = ' + (end - start) + 'ms');
+console.log('lib took ' + (end - start) + ' ms');
