@@ -1,56 +1,103 @@
 function Tab() {
-    this._openTabs = [];
+    this.IsOpen = function(fileName) {
+        var len = w2ui.tabs.tabs.length;
+        for (var i = 0; i < len; i++) {
+            var tab = w2ui.tabs.tabs[i];
+            if (tab.caption == fileName) {
+                return tab;
+            }
+        }
 
-    this.GenID = function(tid) {
-        return 'tab' + tid;
+        return null;
     };
 
-    this.Open = function(fileName) {
-        var index = this._openTabs.indexOf(fileName);
-        if (index !== -1) {
-            this.Activate(index + 1);
+    this.Open = function(event) {
+        var fileName = event.object.text;
+        if (window.File.PathOf(fileName) === null) {
             return false;
         }
 
-        if (this._openTabs.length !== 0) {
-            var tab_id = this.GenID(this._openTabs.length + 1);
-            var tab = {id: tab_id, caption: fileName, closable: true};
+        var tab = this.IsOpen(fileName);
+
+        if (tab !== null) {
+            w2ui.tabs.click(tab.id);
+
+            return false;
+        }
+
+        tab = this.IsOpen('Untitled');
+
+        if (tab === null) {
+            var len = w2ui.tabs.tabs.length;
+            tab = {
+                id: 'tab' + (len + 1),
+                caption: fileName,
+                closable: true
+            };
 
             w2ui.tabs.add(tab);
-            w2ui.tabs.click(tab_id);
+            w2ui.tabs.click(tab.id);
         } else {
-            w2ui.tabs.tabs[0].caption = fileName;
-            w2ui.tabs.refresh();
+            tab.caption = fileName;
+            window.File.Edit(event);
         }
 
-        this._openTabs.push(fileName);
-
-        /// since no exchange is called, we have to do it manually
-        if (this._openTabs.length === 1) {
-            window.File.Edit(fileName);
-        }
+        w2ui.tabs.refresh();
     };
 
-    this.Close = function(fileName) {
-        var index = this._openTabs.indexOf(fileName);
-        if (index !== -1) {
-            this._openTabs.splice(index, 1);
-            if (this._openTabs.length !== 0) {
-                if (window.File.IsCurrent(fileName)) {
-                    this.Activate(this._openTabs.length);
+    this.Close = function(event) {
+        var fileName = event.object.text;
+        var tab = this.IsOpen(fileName);
+
+        if (tab) {
+            var len = w2ui.tabs.tabs.length;
+
+            if (len === 1) {
+                tab.caption = 'Untitled';
+                w2ui.tabs.refresh();
+
+                window.Editor.setValue('');
+
+                event.preventDefault();
+
+                return false;
+            } else if (w2ui.tabs.active == tab.id) {
+                var next_tab = this.FindAfter(tab);
+                if (next_tab) {
+                    w2ui.tabs.click(next_tab.id);
                 }
-            } else {
-                this.Open('Untitled');
             }
         }
     };
 
-    this.Activate = function(tid) {
-        var tab_id = this.GenID(tid);
-        w2ui.tabs.click(tab_id);
+    this.FindAfter = function(after_tab) {
+        var len = w2ui.tabs.tabs.length;
+        if (len === 0) {
+            console.log('Nothing there');
+            return null;
+        }
+
+        for (var i = 0; i < len; i++) {
+            if (w2ui.tabs.tabs[i] == after_tab) {
+                if ((i + 1) < len) {
+                    console.log('After');
+                    return w2ui.tabs.tabs[i + 1];
+                } else if (i > 0) {
+                    console.log('Previous');
+                    return w2ui.tabs.tabs[i - 1];
+                } else {
+                    console.log('Nothing before/after');
+                    return null;
+                }
+            }
+        }
+
+        console.log('Nothing found');
+
+        return w2ui.tabs.tabs[0];
     };
 
-    this.Exchange = function(fileName) {
-        window.File.Edit(fileName);
+    this.Exchange = function(event) {
+        window.File.Edit(event);
     };
 }

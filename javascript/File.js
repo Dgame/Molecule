@@ -8,44 +8,55 @@ function File() {
         txt: 'text'
     };
 
-    this.IsCurrent = function(fileName) {
+    this.PathOf = function(fileName) {
         var path = __dirname + '/' + fileName;
+        var stat = window.FS.statSync(path);
 
-        return $('#filename').val() == path;
-    };
-
-    this.Open = function(fileName) {
-        if (this.IsCurrent(fileName)) {
-            return false;
-        }
-
-        var stat = window.FS.statSync(__dirname + '/' + fileName);
         if (stat && stat.isDirectory()) {
+            return null;
+        }
+
+        return path;
+    };
+
+    this.Edit = function(event) {
+        if (event === undefined) {
             return false;
         }
 
-        window.Tab.Open(fileName);
-    };
+        var fileName = event.object.text;
+        var path = this.PathOf(fileName);
+        if (path === null) {
+            return false;
+        }
 
-    this.Edit = function(fileName) {
-        console.log('File edit');
-        var path = __dirname + '/' + fileName;
+        console.log('edit ' + path);
+
+        if ($('#filename') == path) {
+            return false;
+        }
+
         $('#filename').val(path);
 
-        var data = window.FS.readFileSync(path);
+        try {
+            var data = window.FS.readFileSync(path);
 
-        var dot_pos = fileName.lastIndexOf('.');
-        if (dot_pos !== -1) {
-            var mode = fileName.substr(dot_pos + 1);
-            if (mode in this._modes) {
-                mode = this._modes[mode];
+            var dot_pos = fileName.lastIndexOf('.');
+            if (dot_pos !== -1) {
+                var mode = fileName.substr(dot_pos + 1);
+                if (mode in this._modes) {
+                    mode = this._modes[mode];
+                }
+
+                window.Editor.getSession().setMode('ace/mode/' + mode);
             }
 
-            window.Editor.getSession().setMode('ace/mode/' + mode);
+            window.Editor.setValue(data.toString());
+            window.Editor.clearSelection();
+        } catch (err) {
+            window.Editor.setValue('');
+            console.log('No such file: ' + err);
         }
-
-        window.Editor.setValue(data.toString());
-        window.Editor.clearSelection();
     };
 
     this.Save = function(editor) {
