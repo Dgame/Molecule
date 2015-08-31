@@ -12,11 +12,13 @@ function Tab() {
     };
 
     this.Open = function(event) {
-        var fileName = event.object.text;
-        if (window.File.PathOf(fileName) === null) {
+        console.log('open ' + event.object.path);
+
+        if (!window.File.IsFile(event.object.path)) {
             return false;
         }
 
+        var fileName = event.object.text;
         var tab = this.IsOpen(fileName);
 
         if (tab !== null) {
@@ -32,6 +34,7 @@ function Tab() {
             tab = {
                 id: 'tab' + (len + 1),
                 caption: fileName,
+                path: event.object.path,
                 closable: true
             };
 
@@ -39,6 +42,8 @@ function Tab() {
             w2ui.tabs.click(tab.id);
         } else {
             tab.caption = fileName;
+            tab.path = event.object.path;
+
             w2ui.tabs.refresh();
 
             window.File.Edit(event);

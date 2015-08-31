@@ -52,12 +52,14 @@ $(function() {
 
         for (var i = 0; i < len; i++) {
             var file = entries[i];
+            var path = folder + '/' + file;
+
             var obj = {
                 text: file,
+                path: path,
                 img: 'icon-page'
             };
 
-            var path = folder + '/' + file;
             var stat = window.FS.statSync(path);
 
             if (stat && stat.isDirectory()) {

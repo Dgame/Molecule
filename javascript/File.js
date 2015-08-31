@@ -8,29 +8,23 @@ function File() {
         txt: 'text'
     };
 
-    this.PathOf = function(fileName) {
-        var path = __dirname + '/' + fileName;
+    this.IsFile = function(path) {
         var stat = window.FS.statSync(path);
 
         if (stat && stat.isDirectory()) {
-            return null;
+            return false;
         }
 
-        return path;
+        return true;
     };
 
     this.Edit = function(event) {
-        if (event === undefined) {
-            return false;
-        }
-
-        var fileName = event.object.text;
-        var path = this.PathOf(fileName);
-        if (path === null) {
-            return false;
-        }
-
+        var path = event.object.path;
         console.log('edit ' + path);
+
+        if (!this.IsFile(path)) {
+            return false;
+        }
 
         if ($('#filename').val() == path) {
             return false;
@@ -41,7 +35,7 @@ function File() {
         try {
             var data = window.FS.readFileSync(path);
 
-            this.DetectModeOf(fileName);
+            this.DetectModeOf(event.object.text);
 
             window.Editor.setValue(data.toString());
             window.Editor.clearSelection();
