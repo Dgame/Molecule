@@ -10,7 +10,6 @@ function File() {
 
     this.IsFile = function(path) {
         var stat = window.FS.statSync(path);
-
         if (stat && stat.isDirectory()) {
             return false;
         }
@@ -22,7 +21,7 @@ function File() {
         var path = event.object.path;
         console.log('edit ' + path);
 
-        if (!this.IsFile(path)) {
+        if (!path || !this.IsFile(path)) {
             return false;
         }
 

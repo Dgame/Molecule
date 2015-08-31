@@ -58,12 +58,12 @@ function Tab() {
             var len = w2ui.tabs.tabs.length;
 
             if (len === 1) {
+                event.preventDefault();
+
                 tab.caption = 'Untitled';
                 w2ui.tabs.refresh();
 
                 window.Editor.setValue('');
-
-                event.preventDefault();
 
                 return false;
             } else if (w2ui.tabs.active == tab.id) {

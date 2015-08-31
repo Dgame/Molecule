@@ -7,6 +7,7 @@ $(function() {
         tabs: [{
             id: 'tab1',
             caption: 'Untitled',
+            path: null,
             closable: true
         }],
         onClick: function(event) {
@@ -32,14 +33,6 @@ $(function() {
                 style: 'background-color: #F5F6F7; padding: 5px;'
             }
         ]
-    });
-
-    $('#cmd').keypress(function(event) {
-        if (event.which === 13) {
-            event.preventDefault();
-            alert($(this).val());
-            $(this).hide();
-        }
     });
 
     var sidebarNr = 0;
